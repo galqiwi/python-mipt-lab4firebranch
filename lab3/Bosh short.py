@@ -5,52 +5,69 @@
 from graph import *
 import tkinter
 from PIL import Image
+import random
+
+fire = []
 
 fl=1
 t=0
 T=0
 FL=1
+tick = 0
 def update():
-    global t, T, FL
-    
-    global fl
-    T+=FL
-    if T==255:
-        Fl=-1
-    t=t+fl
-    if t>=1:
-        fl=-1
-    if t<-1:
-        fl=1
-    for i in range(dwidth):
-        for j in range(dheight):
+    global tick, fire, width_global, height_global
+    tick += 1
+    for i in fire:
+        deleteObject(i)
+    fire = []
+    N = 50
+    for i in range(0, N + 2):
+        x = i / N * width_global
+        brushColor('red')
+        penColor('red')
+        dx = (random.random() - 0.5) * 10
+        dy = (random.random() - 0.5) * 10
+        fire.append(polygon([(x - 20, height_global), (x + 20, height_global), (x + 2 * dx, height_global - 40 - 2 * dy)]))
+    if (tick % 2 == 0):
+        global t, T, FL
+        global fl
+        T+=FL
+        if T==255:
+            Fl=-1
+        t=t+fl
+        if t>=1:
+            fl=-1
+        if t<-1:
+            fl=1
+        for i in range(dwidth):
+            for j in range(dheight):
                 r=dpix[i, j][0]+T
                 g=dpix[i, j][1]-T
                 b=dpix[i, j][2]+0.5*T*2*t
                 if not (r>140 and g>140 and b>140):
                     moveObjectBy(objdoot[i][j], 5*fl, -5*fl)
-                    
-                    
-    eimage=Image.open("Eye.jpg")
-    ewidth=eimage.size[0]
-    eheight=eimage.size[1]
-    epix=eimage.load()
-    obje=list()
-    for i in range(ewidth):
-        obje.append([])
-        for j in range(eheight):
-            obje[i].append([])
-            r=max(min(epix[i, j][0]+T, 255), 0)
-            g=max(min(epix[i, j][1]-T, 255), 0)
-            b=max(min(epix[i, j][2]+T*2*t, 255), 0)
-            print(r, g , b, type(r))
-            penColor(int(r), int(g), int(b))
-            brushColor(int(r), int(g), int(b))
-            if not (r>140 and g>140 and b>140):
-                r+=100
-                g+=100
-                b+=100
-                obje[i][j]=rectangle(gwidth*0.7*scale+i*scale, gheight*0.32*scale+j*scale, gwidth*0.7*scale+i*scale+scale, gheight*0.32*scale+j*scale+scale)
+                        
+                        
+        eimage=Image.open("Eye.jpg")
+        ewidth=eimage.size[0]
+        eheight=eimage.size[1]
+        epix=eimage.load()
+        obje=list()
+        for i in range(ewidth):
+            obje.append([])
+            for j in range(eheight):
+                obje[i].append([])
+                r=max(min(epix[i, j][0]+T, 255), 0)
+                g=max(min(epix[i, j][1]-T, 255), 0)
+                b=max(min(epix[i, j][2]+T*2*t, 255), 0)
+                penColor(int(r), int(g), int(b))
+                brushColor(int(r), int(g), int(b))
+                if not (r>140 and g>140 and b>140):
+                    r+=100
+                    g+=100
+                    b+=100
+                    obje[i][j]=rectangle(gwidth*0.7*scale+i*scale, gheight*0.32*scale+j*scale, gwidth*0.7*scale+i*scale+scale, gheight*0.32*scale+j*scale+scale)
+
                 
     
     
@@ -64,8 +81,8 @@ gwidth=image.size[0]
 gheight=image.size[1]
 pix=image.load()
 scale=3
-print(3)
-
+width_global = gwidth * scale
+height_global = gheight * scale
 
 canvasSize(gwidth*scale, gheight*scale)
 windowSize(gwidth*scale, gheight*scale)
@@ -98,8 +115,7 @@ for i in range(width):
             objball[i][j]=rectangle(gwidth*0.74*scale+i*scale, gheight*0.16*scale+j*scale, gwidth*0.74*scale+i*scale+scale, gheight*0.16*scale+j*scale+scale)
 
 
-            
-print(3)
+           
 dimage=Image.open("Doot.jpg")
 dwidth=dimage.size[0]
 dheight=dimage.size[1]
@@ -133,7 +149,7 @@ for i in range(ewidth):
         brushColor(r, g, b)
         if not (r>140 and g>140 and b>140):
             obje[i][j]=rectangle(gwidth*0.7*scale+i*scale, gheight*0.32*scale+j*scale, gwidth*0.7*scale+i*scale+scale, gheight*0.32*scale+j*scale+scale)
-print(3)
-onTimer(update, 50)
+
+onTimer(update, 25)
 
 run()
